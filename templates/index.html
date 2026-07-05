@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<!-- Hero Slider -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+  </div>
+
+  <div class="carousel-inner">
+
+    <!-- Slide 1 – New Season Sale -->
+    <div class="carousel-item active hero-slide hero-slide-1">
+      <div class="container hero-content text-dark py-5">
+        <div class="row align-items-center min-vh-slide">
+          <div class="col-lg-6">
+            <span class="badge hero-badge mb-3 px-3 py-2 fs-6">🔥 New Season Sale</span>
+            <h1 class="hero-heading mb-3">Discover Fashion<br><span class="hero-sub">That Defines You</span></h1>
+            <p class="lead mb-4 hero-desc">Shop the latest clothes, luxury watches, shoes and accessories. Free delivery on orders over Rs 75.</p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="{% url 'store' %}" class="btn btn-hero-primary btn-lg fw-bold px-4">Shop Now <i class="bi bi-arrow-right ms-1"></i></a>
+              <a href="{% url 'store' %}?category=watches" class="btn btn-hero-outline btn-lg px-4">Luxury Watches</a>
+            </div>
+          </div>
+          <div class="col-lg-6 d-none d-lg-flex justify-content-center gap-3 pt-4">
+            {% for p in featured_products|slice:":3" %}
+            <div class="{% cycle 'hero-card-1' 'hero-card-2' 'hero-card-3' %}">
+              <img src="{{ p.image_url }}" class="img-fluid rounded-4 shadow-lg" style="height:220px; object-fit:cover; width:100%" alt="{{ p.name }}">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 – 10% Discount -->
+    <div class="carousel-item hero-slide hero-slide-2">
+      <div class="container hero-content text-white py-5">
+        <div class="row align-items-center min-vh-slide">
+          <div class="col-lg-7">
+            <span class="badge hero-badge mb-3 px-3 py-2 fs-6">🏷️ Limited Offer</span>
+            <h1 class="hero-heading mb-3">Flat <span class="hero-sub">10% OFF</span><br>Your First Order</h1>
+            <p class="lead mb-4 hero-desc">Use code <strong class="coupon-code">GREAT10</strong> at checkout. Valid on all clothes, shoes, bags and accessories. Don't miss out!</p>
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+              <a href="{% url 'store' %}" class="btn btn-hero-primary btn-lg fw-bold px-4">Claim Discount <i class="bi bi-tag ms-1"></i></a>
+              <span class="text-white-50 small">* Min order Rs 500. One use per customer.</span>
+            </div>
+          </div>
+          <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+            <div class="discount-badge-big">
+              <div class="text-center">
+                <div style="font-size:1.1rem;font-weight:600;opacity:.85">GET</div>
+                <div style="font-size:5rem;font-weight:900;line-height:1">10%</div>
+                <div style="font-size:1.6rem;font-weight:700">OFF</div>
+                <div style="font-size:.9rem;opacity:.8;margin-top:.3rem">Use code GREAT10</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 – Free Delivery on New Arrivals -->
+    <div class="carousel-item hero-slide hero-slide-3">
+      <div class="container hero-content text-white py-5">
+        <div class="row align-items-center min-vh-slide">
+          <div class="col-lg-6">
+            <span class="badge hero-badge mb-3 px-3 py-2 fs-6">🚚 Free Delivery</span>
+            <h1 class="hero-heading mb-3">New Arrivals<br><span class="hero-sub">Just Landed</span></h1>
+            <p class="lead mb-4 hero-desc">Fresh styles added every week. Get free home delivery on all orders above Rs 75. Shop before stock runs out!</p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="{% url 'store' %}?sort=newest" class="btn btn-hero-primary btn-lg fw-bold px-4">See New Arrivals <i class="bi bi-stars ms-1"></i></a>
+              <a href="{% url 'store' %}?category=clothes" class="btn btn-hero-outline btn-lg px-4">Browse Clothes</a>
+            </div>
+          </div>
+          <div class="col-lg-6 d-none d-lg-flex justify-content-center gap-3 pt-4">
+            {% for p in featured_products|slice:"3:6" %}
+            <div class="{% cycle 'hero-card-1' 'hero-card-2' 'hero-card-3' %}">
+              <img src="{{ p.image_url }}" class="img-fluid rounded-4 shadow-lg" style="height:220px; object-fit:cover; width:100%" alt="{{ p.name }}">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controls -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+
+</div>
+
+<!-- Category chips -->
+<section class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{% url 'store' %}" class="cat-chip"><i class="bi bi-grid-fill me-1"></i>All</a>
+      {% for cat in categories %}
+      <a href="{% url 'store' %}?category={{ cat.slug }}" class="cat-chip">{{ cat.icon }} {{ cat.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <h2 class="section-title">Featured Products</h2>
+      <a href="{% url 'store' %}" class="btn btn-outline-primary btn-sm">View all <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for product in featured_products %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card product-card h-100">
+          <div class="img-wrap">
+            <a href="{% url 'product_detail' product.slug %}">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/{{ product.slug }}/600/600'">
+            </a>
+            {% if product.discount_percent %}
+            <span class="badge-discount">-{{ product.discount_percent }}%</span>
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <small class="text-muted">{{ product.category.icon }} {{ product.category.name }}</small>
+            <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark fw-semibold mt-1 mb-2 lh-sm">{{ product.name }}</a>
+            <div class="star-rating mb-2">
+              {% with r=product.rating %}
+              {% for i in "12345" %}{% if forloop.counter <= r %}⭐{% else %}☆{% endif %}{% endfor %}
+              {% endwith %}
+              <small class="text-muted ms-1">{{ product.rating }}</small>
+            </div>
+            <div class="mt-auto">
+              <div class="mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fw-bold text-primary fs-5">${{ product.price }}</span>
+                  {% if product.original_price %}<del class="text-muted small">${{ product.original_price }}</del>{% endif %}
+                </div>
+                <div class="text-success small fw-semibold">Rs. {{ product.price_npr|intcomma }}</div>
+              </div>
+              <form method="post" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <button class="btn btn-cart w-100 btn-sm mb-1">
+                  <i class="bi bi-bag-plus me-1"></i> Add to Cart
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Promo banner -->
+<section class="py-4" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">
+  <div class="container text-center text-white py-3">
+    <h3 class="fw-bold mb-2">⌚ Luxury Watches — Up to 25% Off</h3>
+    <p class="mb-3">Limited-time offer on our bestselling timepieces.</p>
+    <a href="{% url 'store' %}?category=watches" class="btn btn-light fw-bold px-4">Shop Watches</a>
+  </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <h2 class="section-title">New Arrivals</h2>
+      <a href="{% url 'store' %}?sort=newest" class="btn btn-outline-primary btn-sm">See all <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for product in new_arrivals %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card product-card h-100">
+          <div class="img-wrap">
+            <a href="{% url 'product_detail' product.slug %}">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/{{ product.slug }}/600/600'">
+            </a>
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <small class="text-muted">{{ product.category.icon }} {{ product.category.name }}</small>
+            <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark fw-semibold mt-1 mb-auto lh-sm">{{ product.name }}</a>
+            <div class="mt-3">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <div>
+                  <span class="fw-bold text-primary">${{ product.price }}</span>
+                  <div class="text-success" style="font-size:.75rem;font-weight:600">Rs. {{ product.price_npr|intcomma }}</div>
+                </div>
+                <form method="post" action="{% url 'add_to_cart' product.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-cart btn-sm px-3"><i class="bi bi-bag-plus"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Trust badges -->
+<section class="trust-section py-5">
+  <div class="container">
+    <div class="row g-4 text-center">
+
+      <div class="col-6 col-md-3">
+        <div class="trust-card trust-card-blue">
+          <div class="trust-icon-wrap trust-icon-blue">
+            <i class="bi bi-truck"></i>
+          </div>
+          <strong class="d-block mt-3 mb-1">Free Shipping</strong>
+          <p class="small mb-0">On all orders over Rs 75</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="trust-card trust-card-green">
+          <div class="trust-icon-wrap trust-icon-green">
+            <i class="bi bi-arrow-return-left"></i>
+          </div>
+          <strong class="d-block mt-3 mb-1">Easy Returns</strong>
+          <p class="small mb-0">30-day hassle-free returns</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="trust-card trust-card-purple">
+          <div class="trust-icon-wrap trust-icon-purple">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <strong class="d-block mt-3 mb-1">Secure Payment</strong>
+          <p class="small mb-0">SSL encrypted checkout</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="trust-card trust-card-orange">
+          <div class="trust-icon-wrap trust-icon-orange">
+            <i class="bi bi-headset"></i>
+          </div>
+          <strong class="d-block mt-3 mb-1">24/7 Support</strong>
+          <p class="small mb-0">Always here to help you</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

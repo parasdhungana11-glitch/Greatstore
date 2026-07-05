@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Redirecting to eSewa...{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+  <div class="card border-0 shadow rounded-4 p-5 mx-auto" style="max-width:480px">
+    <span style="background:#60BB46;color:#fff;padding:6px 18px;border-radius:8px;font-weight:700;font-size:1.2rem;display:inline-block;margin:0 auto 1.5rem">eSewa</span>
+    <h4 class="fw-bold mb-2">Redirecting to eSewa</h4>
+    <p class="text-muted mb-4">Please wait, you are being redirected to eSewa to complete your payment of <strong>Rs. {{ order.total }}</strong>.</p>
+    <div class="spinner-border text-success mb-4" role="status"></div>
+
+    <!-- Auto-submit form to eSewa -->
+    <form id="esewaForm" method="POST" action="{{ esewa_url }}" class="d-none">
+      {% for key, value in form_data.items %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endfor %}
+    </form>
+
+    <button onclick="document.getElementById('esewaForm').submit()" class="btn btn-success px-4">
+      Continue to eSewa <i class="bi bi-arrow-right ms-1"></i>
+    </button>
+    <p class="text-muted small mt-3">
+      <strong>Test credentials:</strong> eSewa ID: <code>9806800001</code> | Password: <code>Nepal@123</code> | MPIN: <code>1122</code> | Token: <code>123456</code>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Auto-submit after 1.5 seconds
+  setTimeout(() => document.getElementById('esewaForm').submit(), 1500);
+</script>
+{% endblock %}

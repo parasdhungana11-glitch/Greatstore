@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Search: "{{ query }}" — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3 class="fw-bold mb-1">
+    Search results for "<span class="text-primary">{{ query }}</span>"
+  </h3>
+  <p class="text-muted mb-4">{{ products.count }} item{{ products.count|pluralize }} found</p>
+
+  {% if products %}
+  <div class="row g-4">
+    {% for product in products %}
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="card product-card h-100">
+        <div class="img-wrap">
+          <a href="{% url 'product_detail' product.slug %}">
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/{{ product.slug }}/600/600'">
+          </a>
+          {% if product.discount_percent %}
+          <span class="badge-discount">-{{ product.discount_percent }}%</span>
+          {% endif %}
+        </div>
+        <div class="card-body d-flex flex-column p-3">
+          <small class="text-muted">{{ product.category.icon }} {{ product.category.name }}</small>
+          <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark fw-semibold mt-1 mb-auto lh-sm">{{ product.name }}</a>
+          <div class="mt-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="fw-bold text-primary">${{ product.price }}</span>
+              {% if product.original_price %}<del class="text-muted small">${{ product.original_price }}</del>{% endif %}
+            </div>
+            <form method="post" action="{% url 'add_to_cart' product.id %}">
+              {% csrf_token %}
+              <button class="btn btn-cart w-100 btn-sm mb-1"><i class="bi bi-bag-plus me-1"></i>Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-search fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">Nothing found for "{{ query }}"</h5>
+    <p class="text-muted">Try a different keyword like "watch", "dress", or "sneakers".</p>
+    <a href="{% url 'store' %}" class="btn btn-primary">Browse All Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

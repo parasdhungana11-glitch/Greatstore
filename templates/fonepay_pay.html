@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Fonepay Payment — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:480px">
+  <div class="card border-0 shadow rounded-4 overflow-hidden">
+    <div class="p-4 text-white text-center" style="background:linear-gradient(135deg,#c0392b,#e74c3c)">
+      <div class="fw-bold fs-4 mb-1" style="letter-spacing:1px">fonepay</div>
+      <div style="font-size:.85rem;opacity:.85">Nepal's Digital Payment Network</div>
+    </div>
+
+    <div class="p-4 text-center">
+      <p class="text-muted mb-1">Paying for <strong>Order #{{ order.id }}</strong></p>
+      <div class="display-6 fw-bold text-danger mb-4">Rs {{ order.total }}</div>
+
+      <!-- QR placeholder -->
+      <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+           style="width:180px;height:180px;background:#f8f9fa;border:2px dashed #dee2e6">
+        <div>
+          <i class="bi bi-qr-code" style="font-size:5rem;color:#c0392b"></i>
+          <div class="small text-muted mt-1">Scan with Fonepay app</div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning text-start small mb-4">
+        <strong><i class="bi bi-info-circle me-1"></i>How to pay:</strong>
+        <ol class="mb-0 mt-1 ps-3">
+          <li>Open your <strong>Fonepay</strong> app (or any linked bank app)</li>
+          <li>Tap <strong>Scan QR</strong> and scan the code above</li>
+          <li>Confirm the amount: <strong>Rs {{ order.total }}</strong></li>
+          <li>Enter your PIN to complete</li>
+        </ol>
+      </div>
+
+      <!-- Supported banks -->
+      <p class="text-muted small fw-semibold mb-2">Accepted by all Nepali banks:</p>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mb-4 small text-muted">
+        <span class="badge bg-light text-dark border">NIC Asia</span>
+        <span class="badge bg-light text-dark border">Nabil Bank</span>
+        <span class="badge bg-light text-dark border">Sanima Bank</span>
+        <span class="badge bg-light text-dark border">Global IME</span>
+        <span class="badge bg-light text-dark border">Citizens Bank</span>
+        <span class="badge bg-light text-dark border">Laxmi Bank</span>
+        <span class="badge bg-light text-dark border">Sunrise Bank</span>
+        <span class="badge bg-light text-dark border">+ all others</span>
+      </div>
+
+      <!-- Demo confirm (for testing without real Fonepay) -->
+      <a href="{% url 'fonepay_callback' order.id %}?PS=success&PRN={{ order.transaction_uuid }}&BID=DEMO{{ order.id }}"
+         class="btn btn-danger btn-lg w-100 fw-bold mb-2">
+        <i class="bi bi-check-circle me-2"></i>Confirm Payment (Demo)
+      </a>
+      <a href="{% url 'payment_failed' order.id %}" class="btn btn-outline-secondary w-100">
+        Cancel
+      </a>
+      <p class="text-muted small mt-3">
+        <i class="bi bi-info-circle me-1"></i>
+        In production, connect your <a href="https://fonepay.com" target="_blank">Fonepay merchant account</a>
+        to enable real QR generation.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

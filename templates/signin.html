@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:440px">
+  <div class="card border-0 shadow rounded-4 p-4 mt-3">
+    <div class="text-center mb-4">
+      <i class="bi bi-bag-heart-fill text-primary fs-1"></i>
+      <h3 class="fw-bold mt-2">Welcome back</h3>
+      <p class="text-muted small">Sign in to your GreatStore account</p>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'signin' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold mb-3">Sign In</button>
+    </form>
+    <p class="text-center text-muted mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-primary fw-semibold">Register</a></p>
+  </div>
+</div>
+{% endblock %}

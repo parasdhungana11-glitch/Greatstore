@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmed — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center" style="max-width:600px">
+  <div class="card border-0 shadow rounded-4 p-5 mt-4">
+    <i class="bi bi-check-circle-fill text-success" style="font-size:5rem"></i>
+    <h2 class="fw-bold mt-4">Order Confirmed!</h2>
+    <p class="text-muted mb-1">Thank you, <strong>{{ order.full_name }}</strong>!</p>
+    <p class="text-muted">Your order <strong>#{{ order.id }}</strong> has been placed successfully.</p>
+
+    <div class="bg-light rounded-3 p-4 my-4 text-start">
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Order Number</span>
+        <strong>#{{ order.id }}</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Total</span>
+        <strong class="text-primary">Rs {{ order.total }}</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Status</span>
+        <span class="badge bg-warning text-dark">{{ order.get_status_display }}</span>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Payment</span>
+        <span class="badge {% if order.payment_status == 'paid' %}bg-success{% else %}bg-secondary{% endif %}">
+          {{ order.get_payment_method_display }} —
+          {% if order.payment_status == 'paid' %}Paid{% else %}Pending{% endif %}
+        </span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span class="text-muted">Email</span>
+        <strong>{{ order.email }}</strong>
+      </div>
+    </div>
+
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="{% url 'home' %}" class="btn btn-primary px-4">Continue Shopping</a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-primary px-4">My Orders</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

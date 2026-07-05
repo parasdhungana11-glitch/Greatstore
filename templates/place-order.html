@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="fw-bold mb-4">Checkout</h2>
+  <div class="row g-4">
+
+    <!-- Shipping + Payment form -->
+    <div class="col-lg-7">
+      <form method="post" action="{% url 'place_order' %}" id="checkoutForm">
+        {% csrf_token %}
+
+        <!-- Shipping -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+          <h5 class="fw-bold mb-4"><i class="bi bi-truck me-2 text-primary"></i>Shipping Information</h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input type="text" name="full_name" class="form-control" required
+                     value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" name="email" class="form-control" required
+                     value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input type="tel" name="phone" class="form-control" required placeholder="98XXXXXXXX">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Delivery Address</label>
+              <textarea name="address" class="form-control" rows="3" required placeholder="Street, City, Country, ZIP"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+          <h5 class="fw-bold mb-4"><i class="bi bi-credit-card me-2 text-primary"></i>Payment Method</h5>
+
+          <!-- Card -->
+          <label class="d-flex align-items-center gap-3 p-3 border rounded-3 mb-3 payment-option"
+                 style="cursor:pointer" for="pay_card">
+            <input type="radio" name="payment_method" value="card" id="pay_card" class="form-check-input mt-0" style="width:20px;height:20px">
+            <i class="bi bi-credit-card-2-front-fill text-primary" style="font-size:1.8rem;flex-shrink:0"></i>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">Credit / Debit Card</div>
+              <small class="text-muted">Visa, Mastercard, any Nepali bank card</small>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <span style="background:#1A1F71;color:#fff;font-style:italic;font-weight:900;font-size:.75rem;padding:3px 7px;border-radius:4px;letter-spacing:1px;font-family:Arial,sans-serif">VISA</span>
+              <span style="position:relative;display:inline-flex;align-items:center;width:34px;height:22px;flex-shrink:0">
+                <span style="position:absolute;left:0;width:22px;height:22px;background:#EB001B;border-radius:50%"></span>
+                <span style="position:absolute;right:0;width:22px;height:22px;background:#F79E1B;border-radius:50%;opacity:.95"></span>
+              </span>
+            </div>
+          </label>
+
+          <!-- Fonepay -->
+          <label class="d-flex align-items-center gap-3 p-3 border rounded-3 mb-3 payment-option"
+                 style="cursor:pointer" for="pay_fonepay">
+            <input type="radio" name="payment_method" value="fonepay" id="pay_fonepay" class="form-check-input mt-0" style="width:20px;height:20px">
+            <span style="background:#c0392b;color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;font-size:.85rem;flex-shrink:0">fonepay</span>
+            <div>
+              <div class="fw-semibold">Fonepay / Phone Pay</div>
+              <small class="text-muted">QR scan — works with all Nepali banks</small>
+            </div>
+          </label>
+
+          <!-- Khalti -->
+          <label class="d-flex align-items-center gap-3 p-3 border rounded-3 mb-3 cursor-pointer payment-option"
+                 style="cursor:pointer" for="pay_khalti">
+            <input type="radio" name="payment_method" value="khalti" id="pay_khalti" class="form-check-input mt-0" style="width:20px;height:20px">
+            <span style="background:#5C2D91;color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;font-size:.9rem;flex-shrink:0">Khalti</span>
+            <div>
+              <div class="fw-semibold">Pay with Khalti</div>
+              <small class="text-muted">Nepal's most popular digital wallet</small>
+            </div>
+          </label>
+
+          <!-- eSewa -->
+          <label class="d-flex align-items-center gap-3 p-3 border rounded-3 mb-3 cursor-pointer payment-option"
+                 style="cursor:pointer" for="pay_esewa">
+            <input type="radio" name="payment_method" value="esewa" id="pay_esewa" class="form-check-input mt-0" style="width:20px;height:20px">
+            <span style="background:#60BB46;color:#fff;padding:4px 12px;border-radius:6px;font-weight:700;font-size:.9rem;letter-spacing:.5px;flex-shrink:0">eSewa</span>
+            <div>
+              <div class="fw-semibold">Pay with eSewa</div>
+              <small class="text-muted">Nepal's first digital wallet</small>
+            </div>
+          </label>
+
+          <!-- Cash on Delivery -->
+          <label class="d-flex align-items-center gap-3 p-3 border rounded-3 payment-option"
+                 style="cursor:pointer" for="pay_cod">
+            <input type="radio" name="payment_method" value="cod" id="pay_cod" class="form-check-input mt-0" style="width:20px;height:20px" checked>
+            <i class="bi bi-cash-coin text-success" style="font-size:1.8rem;flex-shrink:0"></i>
+            <div>
+              <div class="fw-semibold">Cash on Delivery</div>
+              <small class="text-muted">Pay when your order arrives</small>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+          <i class="bi bi-lock me-2"></i>Place Order — Rs {{ cart_total }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Order summary -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top:80px">
+        <h5 class="fw-bold mb-3">Order Summary</h5>
+        {% for item in cart_items %}
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="{{ item.product.image_url }}" class="rounded-3" style="width:52px;height:52px;object-fit:cover">
+          <div class="flex-grow-1">
+            <div class="fw-semibold small lh-sm">{{ item.product.name }}</div>
+            <div class="text-muted small">× {{ item.quantity }} | {{ item.size }}</div>
+          </div>
+          <span class="fw-bold small">Rs {{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between mb-1 small">
+          <span class="text-muted">Subtotal</span><span>Rs {{ cart_total }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1 small">
+          <span class="text-muted">Shipping</span>
+          <span class="text-success">{% if cart_total >= 75 %}Free{% else %}Rs 9.99{% endif %}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5">
+          <span>Total</span>
+          <span class="text-primary">Rs {{ cart_total }}</span>
+        </div>
+        <div class="mt-3 p-2 bg-light rounded-3 text-center small text-muted">
+          <i class="bi bi-shield-lock me-1 text-success"></i> SSL-encrypted secure checkout
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Highlight selected payment option
+  document.querySelectorAll('.payment-option').forEach(label => {
+    label.querySelector('input').addEventListener('change', () => {
+      document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('border-primary', 'bg-primary-subtle'));
+      label.classList.add('border-primary', 'bg-primary-subtle');
+    });
+  });
+</script>
+{% endblock %}

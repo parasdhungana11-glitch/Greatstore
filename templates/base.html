@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}GreatStore — Fashion & Lifestyle{% endblock %}</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent: #f59e0b;
+  }
+  * { font-family: 'Inter', sans-serif; }
+  body { background: #f8f9fa; }
+
+  /* Navbar */
+  .navbar-top { background: #1e1b4b; color: #a5b4fc; font-size: .82rem; }
+  .navbar-main { background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,.08); }
+  .navbar-brand { font-weight: 700; font-size: 1.4rem; color: var(--primary) !important; }
+  .nav-link { color: #374151 !important; font-weight: 500; }
+  .nav-link:hover { color: var(--primary) !important; }
+
+  /* Cart badge */
+  .cart-badge { position:relative; }
+  .cart-badge .badge { position:absolute; top:-8px; right:-8px; font-size:.65rem; }
+
+  /* Search */
+  .search-form .form-control { border-right: none; border-radius: 10px 0 0 10px; }
+  .search-form .btn { border-radius: 0 10px 10px 0; background: var(--primary); border-color: var(--primary); }
+
+  /* Hero Slider */
+  .hero-slide { min-height: 460px; }
+
+  /* Slide 1 — Warm Yellow */
+  .hero-slide-1 { background: linear-gradient(135deg, #92400e 0%, #d97706 45%, #fbbf24 100%); }
+  .hero-slide-1 .hero-sub  { color: #1c1917; }
+  .hero-slide-1 .hero-desc { color: #451a03; }
+  .hero-slide-1 .btn-hero-primary  { background: #1c1917; color: #fbbf24; border: none; }
+  .hero-slide-1 .btn-hero-primary:hover { background: #000; color: #fef08a; }
+  .hero-slide-1 .btn-hero-outline   { border: 2px solid #1c1917; color: #1c1917; background: rgba(255,255,255,.25); }
+  .hero-slide-1 .btn-hero-outline:hover { background: #1c1917; color: #fbbf24; }
+  .hero-slide-1 .hero-badge { background: #1c1917; color: #fbbf24; }
+
+  /* Slide 2 — Sky Blue */
+  .hero-slide-2 { background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 50%, #7dd3fc 100%); }
+  .hero-slide-2 .hero-sub  { color: #e0f2fe; }
+  .hero-slide-2 .hero-desc { color: #e0f2fe; }
+  .hero-slide-2 .btn-hero-primary  { background: #f59e0b; color: #1c1917; border: none; }
+  .hero-slide-2 .btn-hero-primary:hover { background: #d97706; color: #fff; }
+  .hero-slide-2 .btn-hero-outline   { border: 2px solid rgba(255,255,255,.75); color: #fff; background: transparent; }
+  .hero-slide-2 .btn-hero-outline:hover { background: rgba(255,255,255,.2); color: #fff; }
+  .hero-slide-2 .hero-badge { background: #f59e0b; color: #1c1917; }
+  .hero-slide-2 .coupon-code { color: #fef08a; }
+
+  /* Slide 3 — Rose-Purple (vibrant, eye-catching) */
+  .hero-slide-3 { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 45%, #ec4899 100%); }
+  .hero-slide-3 .hero-sub  { color: #fbcfe8; }
+  .hero-slide-3 .hero-desc { color: #f5d0fe; }
+  .hero-slide-3 .btn-hero-primary  { background: #fbbf24; color: #1c1917; border: none; }
+  .hero-slide-3 .btn-hero-primary:hover { background: #f59e0b; color: #1c1917; }
+  .hero-slide-3 .btn-hero-outline   { border: 2px solid rgba(255,255,255,.7); color: #fff; background: transparent; }
+  .hero-slide-3 .btn-hero-outline:hover { background: rgba(255,255,255,.15); color: #fff; }
+  .hero-slide-3 .hero-badge { background: #fbbf24; color: #1c1917; }
+
+  /* Shared hero styles */
+  .hero-content { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  .min-vh-slide { min-height: 380px; }
+  .hero-heading { font-size: 2.9rem; font-weight: 800; line-height: 1.15; }
+  .hero-badge { font-weight: 700; }
+  .coupon-code { background: rgba(255,255,255,.18); padding: .15rem .5rem; border-radius: 6px;
+                 letter-spacing: 1px; font-family: monospace; font-size: 1rem; color: #fef08a; }
+  .discount-badge-big { width: 220px; height: 220px; border-radius: 50%;
+    background: rgba(255,255,255,.12); border: 3px dashed rgba(255,255,255,.5);
+    display: flex; align-items: center; justify-content: center; color: #fff;
+    backdrop-filter: blur(4px); box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+  #heroCarousel .carousel-indicators button { width: 10px; height: 10px; border-radius: 50%; opacity: .5; }
+  #heroCarousel .carousel-indicators button.active { opacity: 1; background: #f59e0b; }
+
+  /* Category chips */
+  .cat-chip { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1.1rem;
+              border-radius:50px; border:2px solid #e5e7eb; background:#fff;
+              text-decoration:none; color:#374151; font-weight:500; font-size:.9rem;
+              transition:all .2s; white-space:nowrap; }
+  .cat-chip:hover, .cat-chip.active { border-color: var(--primary); background: var(--primary); color:#fff; }
+
+  /* Product card */
+  .product-card { border:none; border-radius:16px; overflow:hidden; transition:transform .2s, box-shadow .2s; background:#fff; }
+  .product-card:hover { transform:translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,.12); }
+  .product-card .img-wrap { position:relative; overflow:hidden; height:260px; background:#f3f4f6; }
+  .product-card .img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+  .product-card:hover .img-wrap img { transform:scale(1.07); }
+  .product-card .badge-discount { position:absolute; top:12px; left:12px;
+    background:var(--accent); color:#fff; font-size:.75rem; padding:.25rem .55rem; border-radius:6px; font-weight:600; }
+  .product-card .btn-cart { background:var(--primary); border:none; border-radius:10px;
+    color:#fff; font-weight:600; transition:background .2s; }
+  .product-card .btn-cart:hover { background:var(--primary-dark); }
+  .star-rating { color: #f59e0b; font-size:.85rem; }
+
+  /* Section header */
+  .section-title { font-weight: 700; font-size: 1.6rem; position:relative; display:inline-block; }
+  .section-title::after { content:''; position:absolute; bottom:-6px; left:0;
+    width:50px; height:3px; background:var(--primary); border-radius:2px; }
+
+  /* Trust badges */
+  .trust-section { background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 40%, #d1fae5 70%, #fef3c7 100%); }
+  .trust-card { background: rgba(255,255,255,.72); border-radius: 20px; padding: 2rem 1.2rem 1.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,.07); transition: transform .25s, box-shadow .25s;
+    backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.9); }
+  .trust-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(0,0,0,.13); }
+  .trust-icon-wrap { width: 64px; height: 64px; border-radius: 18px; font-size: 1.7rem;
+    display: inline-flex; align-items: center; justify-content: center; }
+  /* Blue — Free Shipping */
+  .trust-card-blue  { border-top: 3px solid #60a5fa; }
+  .trust-icon-blue  { background: #dbeafe; color: #2563eb; }
+  /* Green — Easy Returns */
+  .trust-card-green { border-top: 3px solid #34d399; }
+  .trust-icon-green { background: #d1fae5; color: #059669; }
+  /* Purple — Secure Payment */
+  .trust-card-purple{ border-top: 3px solid #a78bfa; }
+  .trust-icon-purple{ background: #ede9fe; color: #7c3aed; }
+  /* Orange — 24/7 Support */
+  .trust-card-orange{ border-top: 3px solid #fb923c; }
+  .trust-icon-orange{ background: #ffedd5; color: #ea580c; }
+
+  /* Footer */
+  footer { background: linear-gradient(135deg, #fef9c3 0%, #fde68a 40%, #fca5a5 80%, #f87171 100%); color:#7c2d12; }
+  footer a { color:#b91c1c; text-decoration:none; font-weight:500; }
+  footer a:hover { color:#7c2d12; text-decoration:underline; }
+  footer .footer-brand { color:#7c2d12; font-weight:800; font-size:1.3rem; }
+  footer h6 { color:#92400e !important; font-weight:700; }
+  footer hr { border-color:#fca5a5 !important; }
+  footer .footer-copy { color:#78350f; }
+  footer .btn-outline-light { border-color:#f87171; color:#b91c1c; background:rgba(255,255,255,.4); }
+  footer .btn-outline-light:hover { background:#f87171; color:#fff; border-color:#f87171; }
+
+  /* Hero floating cards */
+  .hero-card-1 { width:160px; transform: rotate(-3deg) translateY(20px); }
+  .hero-card-2 { width:160px; transform: rotate(2deg); }
+  .hero-card-3 { width:160px; transform: rotate(-1deg) translateY(10px); }
+
+  /* Messages */
+  .messages-wrapper { position:fixed; top:80px; right:20px; z-index:9999; width:320px; }
+</style>
+</head>
+<body>
+
+<!-- Messages -->
+<div class="messages-wrapper">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Top nav bar -->
+<nav class="navbar-top py-1 px-3 d-none d-md-flex justify-content-between">
+  <span><i class="bi bi-truck me-1"></i> Free shipping on orders over Rs 75</span>
+  <div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'dashboard' %}" class="text-decoration-none me-3" style="color:#a5b4fc">
+      <i class="bi bi-person-check me-1"></i>Hi, {{ user.username }}
+    </a>
+    <a href="{% url 'logout' %}" class="text-decoration-none" style="color:#a5b4fc">
+      <i class="bi bi-box-arrow-right me-1"></i>Logout
+    </a>
+    {% else %}
+    <a href="{% url 'signin' %}" class="text-decoration-none me-3" style="color:#a5b4fc">
+      <i class="bi bi-person me-1"></i>Sign In
+    </a>
+    <a href="{% url 'register' %}" class="text-decoration-none" style="color:#a5b4fc">
+      <i class="bi bi-person-plus me-1"></i>Register
+    </a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- Main navbar -->
+<nav class="navbar navbar-expand-lg navbar-main sticky-top py-2">
+  <div class="container">
+    <a class="navbar-brand me-4" href="{% url 'home' %}">
+      <i class="bi bi-bag-heart-fill me-1"></i>GreatStore
+    </a>
+
+    <!-- Category dropdown -->
+    <div class="dropdown me-3 d-none d-lg-block">
+      <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-grid me-1"></i> Categories
+      </button>
+      <ul class="dropdown-menu">
+        {% for cat in categories %}
+        <li><a class="dropdown-item" href="{% url 'store' %}?category={{ cat.slug }}">{{ cat.icon }} {{ cat.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Search -->
+    <form action="{% url 'search' %}" method="get" class="search-form d-flex flex-grow-1 me-4">
+      <input type="text" name="q" class="form-control" placeholder="Search clothes, watches, shoes…" value="{{ request.GET.q|default:'' }}">
+      <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+
+    <!-- Right icons -->
+    <div class="d-flex align-items-center gap-2">
+      {% if user.is_authenticated %}
+      <div class="dropdown">
+        <button class="btn btn-link text-dark p-0 border-0 d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false" title="My Account">
+          <i class="bi bi-person-circle fs-5"></i>
+          <span class="d-none d-md-inline small fw-semibold">{{ user.username }}</span>
+          <i class="bi bi-chevron-down" style="font-size:.65rem"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+          <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-grid me-2 text-primary"></i>My Orders</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+        </ul>
+      </div>
+      {% else %}
+      <a href="{% url 'signin' %}" class="btn btn-outline-primary btn-sm fw-semibold px-3 d-none d-md-inline-flex align-items-center gap-1">
+        <i class="bi bi-person"></i> Sign In
+      </a>
+      <a href="{% url 'register' %}" class="btn btn-primary btn-sm fw-semibold px-3 d-none d-md-inline-flex align-items-center gap-1">
+        <i class="bi bi-person-plus"></i> Register
+      </a>
+      <a href="{% url 'signin' %}" class="text-decoration-none text-dark d-md-none" title="Sign In">
+        <i class="bi bi-person fs-5"></i>
+      </a>
+      {% endif %}
+      <a href="{% url 'cart' %}" class="cart-badge text-decoration-none text-dark ms-1" title="Cart">
+        <i class="bi bi-bag fs-5"></i>
+        {% if cart_count > 0 %}
+        <span class="badge bg-danger">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer class="py-5 mt-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="footer-brand mb-2"><i class="bi bi-bag-heart-fill me-1"></i>GreatStore</div>
+        <p class="small" style="color:#92400e">Your one-stop fashion destination for clothes, watches, shoes and accessories.</p>
+      </div>
+      <div class="col-md-2">
+        <h6 class="mb-3">Shop</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'store' %}?category=clothes">Clothes</a></li>
+          <li><a href="{% url 'store' %}?category=watches">Watches</a></li>
+          <li><a href="{% url 'store' %}?category=shoes">Shoes</a></li>
+          <li><a href="{% url 'store' %}?category=bags">Bags</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h6 class="mb-3">More</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'store' %}?category=jewelry">Jewelry</a></li>
+          <li><a href="{% url 'store' %}?category=sunglasses">Sunglasses</a></li>
+          <li><a href="{% url 'store' %}?category=hats">Hats</a></li>
+          <li><a href="{% url 'store' %}?category=accessories">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="mb-3">Contact</h6>
+        <p class="small"><i class="bi bi-envelope me-2"></i><a href="mailto:parasdhungana11@gmail.com">parasdhungana11@gmail.com</a></p>
+        <p class="small"><i class="bi bi-telephone me-2"></i>9865947163</p>
+        <div class="d-flex gap-2 mt-3">
+          <a href="#" class="btn btn-sm btn-outline-light"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="btn btn-sm btn-outline-light"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="btn btn-sm btn-outline-light"><i class="bi bi-twitter-x"></i></a>
+        </div>
+      </div>
+    </div>
+    <hr style="margin:2rem 0 1rem">
+    <div class="d-flex justify-content-between align-items-center small footer-copy">
+      <span>&copy; 2025 GreatStore. All rights reserved.</span>
+      <div class="d-flex gap-2">
+        <i class="bi bi-credit-card-2-back fs-4"></i>
+        <i class="bi bi-paypal fs-4"></i>
+        <i class="bi bi-google-pay fs-4"></i>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}Card Payment — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:560px">
+  <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+    <!-- Header -->
+    <div class="p-4 text-white" style="background:linear-gradient(135deg,#1e1b4b,#4f46e5)">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-credit-card me-2"></i>Secure Card Payment</h5>
+        <div class="d-flex gap-2 align-items-center">
+          <span style="background:#fff;color:#1A1F71;font-style:italic;font-weight:900;font-size:.8rem;padding:3px 7px;border-radius:4px;letter-spacing:1px;font-family:Arial,sans-serif">VISA</span>
+          <span style="position:relative;display:inline-flex;align-items:center;width:34px;height:22px;flex-shrink:0">
+            <span style="position:absolute;left:0;width:22px;height:22px;background:#EB001B;border-radius:50%"></span>
+            <span style="position:absolute;right:0;width:22px;height:22px;background:#F79E1B;border-radius:50%;opacity:.95"></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Live card preview -->
+      <div class="rounded-3 p-3 mt-2" style="background:rgba(255,255,255,.1);backdrop-filter:blur(8px);min-height:90px">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span style="font-size:.7rem;opacity:.7;letter-spacing:1px">CARD NUMBER</span>
+          <span id="cardBadge" class="badge" style="background:rgba(255,255,255,.2);font-size:.7rem">DEBIT / CREDIT</span>
+        </div>
+        <div id="cardPreviewNumber" class="fw-bold fs-5 tracking-widest mb-1" style="letter-spacing:3px;font-family:monospace">
+          •••• •••• •••• ••••
+        </div>
+        <div class="d-flex justify-content-between">
+          <div>
+            <div style="font-size:.65rem;opacity:.7">CARD HOLDER</div>
+            <div id="cardPreviewName" class="small fw-semibold" style="min-height:18px">YOUR NAME</div>
+          </div>
+          <div class="text-end">
+            <div style="font-size:.65rem;opacity:.7">EXPIRES</div>
+            <div id="cardPreviewExpiry" class="small fw-semibold">MM/YY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="p-4">
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <form method="post" action="{% url 'card_pay' order.id %}" id="cardForm">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Card Number</label>
+          <div class="input-group">
+            <input type="text" id="cardNumber" name="card_number" class="form-control"
+                   placeholder="0000 0000 0000 0000" maxlength="19"
+                   inputmode="numeric" autocomplete="cc-number" required>
+            <span class="input-group-text bg-white border-start-0" id="cardIcon">
+              <i class="bi bi-credit-card text-muted"></i>
+            </span>
+          </div>
+          <div class="form-text">Visa, Mastercard, or any Nepali bank card</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Name on Card</label>
+          <input type="text" id="cardName" name="card_name" class="form-control"
+                 placeholder="JOHN DOE" autocomplete="cc-name" required
+                 style="text-transform:uppercase">
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-7">
+            <label class="form-label fw-semibold">Expiry Date</label>
+            <input type="text" id="cardExpiry" name="expiry" class="form-control"
+                   placeholder="MM / YY" maxlength="7"
+                   inputmode="numeric" autocomplete="cc-exp" required>
+          </div>
+          <div class="col-5">
+            <label class="form-label fw-semibold">CVV / CVC</label>
+            <div class="input-group">
+              <input type="password" id="cardCvv" name="cvv" class="form-control"
+                     placeholder="•••" maxlength="4"
+                     inputmode="numeric" autocomplete="cc-csc" required>
+              <span class="input-group-text bg-white border-start-0" title="3 digits on back of card">
+                <i class="bi bi-question-circle text-muted" style="font-size:.85rem"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order total -->
+        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">
+          <span class="text-muted fw-semibold">Order #{{ order.id }} Total</span>
+          <span class="fs-5 fw-bold text-primary">Rs {{ order.total }}</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" id="payBtn">
+          <i class="bi bi-lock-fill me-2"></i>Pay Rs {{ order.total }} Securely
+        </button>
+
+        <div class="text-center mt-3">
+          <i class="bi bi-shield-lock text-success me-1"></i>
+          <small class="text-muted">256-bit SSL encrypted · PCI DSS compliant</small>
+        </div>
+      </form>
+
+      <div class="text-center mt-3">
+        <a href="{% url 'cart' %}" class="text-muted small"><i class="bi bi-arrow-left me-1"></i>Back to cart</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const numInput    = document.getElementById('cardNumber');
+const nameInput   = document.getElementById('cardName');
+const expiryInput = document.getElementById('cardExpiry');
+const prevNum     = document.getElementById('cardPreviewNumber');
+const prevName    = document.getElementById('cardPreviewName');
+const prevExpiry  = document.getElementById('cardPreviewExpiry');
+const cardBadge   = document.getElementById('cardBadge');
+const cardIcon    = document.getElementById('cardIcon');
+
+// Card number formatting + type detection
+numInput.addEventListener('input', () => {
+  let v = numInput.value.replace(/\D/g,'').substring(0,16);
+  numInput.value = v.replace(/(.{4})/g,'$1 ').trim();
+  const masked = (v + '•'.repeat(16-v.length)).replace(/(.{4})/g,'$1 ').trim();
+  prevNum.textContent = masked;
+
+  const first = v[0];
+  if (first === '4') {
+    cardBadge.textContent = 'VISA';
+    cardBadge.style.background = '#1a1f71';
+    cardIcon.innerHTML = '<span style="background:#1A1F71;color:#fff;font-style:italic;font-weight:900;font-size:.75rem;padding:2px 6px;border-radius:4px;letter-spacing:1px;font-family:Arial,sans-serif">VISA</span>';
+  } else if (first === '5') {
+    cardBadge.textContent = 'MASTERCARD';
+    cardBadge.style.background = '#eb001b';
+    cardIcon.innerHTML = '<span style="position:relative;display:inline-flex;align-items:center;width:30px;height:19px"><span style="position:absolute;left:0;width:19px;height:19px;background:#EB001B;border-radius:50%"></span><span style="position:absolute;right:0;width:19px;height:19px;background:#F79E1B;border-radius:50%;opacity:.95"></span></span>';
+  } else {
+    cardBadge.textContent = 'DEBIT / CREDIT';
+    cardBadge.style.background = 'rgba(255,255,255,.2)';
+    cardIcon.innerHTML = '<i class="bi bi-credit-card text-muted"></i>';
+  }
+});
+
+// Name preview
+nameInput.addEventListener('input', () => {
+  prevName.textContent = nameInput.value.toUpperCase() || 'YOUR NAME';
+  nameInput.value = nameInput.value.toUpperCase();
+});
+
+// Expiry formatting
+expiryInput.addEventListener('input', () => {
+  let v = expiryInput.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+  expiryInput.value = v;
+  prevExpiry.textContent = v || 'MM/YY';
+});
+
+// Submit loading state
+document.getElementById('cardForm').addEventListener('submit', () => {
+  const btn = document.getElementById('payBtn');
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing…';
+  btn.disabled = true;
+});
+</script>
+{% endblock %}

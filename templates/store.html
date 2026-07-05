@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{% if active_category %}{{ active_category.icon }} {{ active_category.name }}{% else %}All Products{% endif %} — GreatStore{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active">{% if active_category %}{{ active_category.name }}{% else %}Store{% endif %}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- Sidebar filters -->
+    <aside class="col-lg-3 col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-3">
+        <h6 class="fw-bold mb-3"><i class="bi bi-grid me-2 text-primary"></i>Categories</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-1">
+            <a href="{% url 'store' %}" class="text-decoration-none {% if not active_category %}fw-bold text-primary{% else %}text-dark{% endif %}">
+              All Products <span class="text-muted small">({{ products.count }})</span>
+            </a>
+          </li>
+          {% for cat in categories %}
+          <li class="mb-1">
+            <a href="{% url 'store' %}?category={{ cat.slug }}" class="text-decoration-none {% if active_category.slug == cat.slug %}fw-bold text-primary{% else %}text-dark{% endif %}">
+              {{ cat.icon }} {{ cat.name }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-funnel me-2 text-primary"></i>Price Range</h6>
+        <form method="get" action="{% url 'store' %}">
+          {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+          <div class="mb-2">
+            <label class="form-label small">Min Price</label>
+            <select name="min_price" class="form-select form-select-sm">
+              <option value="">Any</option>
+              <option value="0" {% if request.GET.min_price == "0" %}selected{% endif %}>$0</option>
+              <option value="50" {% if request.GET.min_price == "50" %}selected{% endif %}>$50</option>
+              <option value="100" {% if request.GET.min_price == "100" %}selected{% endif %}>$100</option>
+              <option value="200" {% if request.GET.min_price == "200" %}selected{% endif %}>$200</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Max Price</label>
+            <select name="max_price" class="form-select form-select-sm">
+              <option value="">Any</option>
+              <option value="50" {% if request.GET.max_price == "50" %}selected{% endif %}>$50</option>
+              <option value="100" {% if request.GET.max_price == "100" %}selected{% endif %}>$100</option>
+              <option value="200" {% if request.GET.max_price == "200" %}selected{% endif %}>$200</option>
+              <option value="500" {% if request.GET.max_price == "500" %}selected{% endif %}>$500</option>
+              <option value="1000" {% if request.GET.max_price == "1000" %}selected{% endif %}>$1000+</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm w-100">Apply</button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Product grid -->
+    <main class="col-lg-9 col-md-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted">{{ total_count }} product{{ total_count|pluralize }} found</span>
+        <form method="get" class="d-flex align-items-center gap-2">
+          {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+          <label class="text-muted small">Sort:</label>
+          <select name="sort" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+            <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
+            <option value="price_low" {% if sort == "price_low" %}selected{% endif %}>Price: Low → High</option>
+            <option value="price_high" {% if sort == "price_high" %}selected{% endif %}>Price: High → Low</option>
+            <option value="rating" {% if sort == "rating" %}selected{% endif %}>Best Rating</option>
+          </select>
+        </form>
+      </div>
+
+      {% if products %}
+      <div class="row g-3">
+        {% for product in products %}
+        <div class="col-6 col-lg-4">
+          <div class="card product-card h-100">
+            <div class="img-wrap">
+              <a href="{% url 'product_detail' product.slug %}">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/{{ product.slug }}/600/600'">
+              </a>
+              {% if product.discount_percent %}
+              <span class="badge-discount">-{{ product.discount_percent }}%</span>
+              {% endif %}
+            </div>
+            <div class="card-body d-flex flex-column p-3">
+              <small class="text-muted">{{ product.category.icon }} {{ product.category.name }}</small>
+              <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark fw-semibold mt-1 mb-2 lh-sm">{{ product.name }}</a>
+              <div class="star-rating mb-2" style="font-size:.8rem">
+                ⭐ {{ product.rating }}
+              </div>
+              <div class="mt-auto">
+                <div class="mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-primary">${{ product.price }}</span>
+                    {% if product.original_price %}<del class="text-muted small">${{ product.original_price }}</del>{% endif %}
+                  </div>
+                  <div class="text-success small fw-semibold">Rs. {{ product.price_npr|intcomma }}</div>
+                </div>
+                <form method="post" action="{% url 'add_to_cart' product.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-cart w-100 btn-sm mb-1">
+                    <i class="bi bi-bag-plus me-1"></i> Add to Cart
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <p class="text-muted mt-3">No products found. Try a different filter.</p>
+        <a href="{% url 'store' %}" class="btn btn-primary">View All Products</a>
+      </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}
